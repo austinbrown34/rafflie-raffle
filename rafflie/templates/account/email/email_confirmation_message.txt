@@ -1,0 +1,4 @@
+{% load account %}{% user_display user as user_display %}{% load i18n %}{% autoescape off %}{% blocktrans with current_site.name as site_name %} Well Howdy, Partner!  We're glad you signed up.  Just activate your account below and get to winning some awesome products. Good luck!
+
+To activate your account, go here: {{ activate_url }}
+{% endblocktrans %}{% endautoescape %}

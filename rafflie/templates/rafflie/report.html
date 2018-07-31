@@ -1,0 +1,714 @@
+<!DOCTYPE HTML> {% load static %}
+<html>
+
+<head>
+  <title>Rafflie</title>
+  {% block extra_head %} {% endblock %}
+
+  <meta property="og:url" content="https://www.rafflie.com" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Rafflie - Totally Free Raffles" />
+  <meta property="og:description" content="Get your free tickets now for this hot new product we're raffling!" />
+  <meta property="og:image" content="http://rafflie.com/static/img/newlogo.png" />
+  <meta property="fb:app_id" content="1285512478176566" />
+  <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+  <meta name="keywords" content="Rafflie - Totally Free Raffles" />
+  <meta name="description" content="Get your free tickets now for this hot new product we're raffling!">
+  <meta name="author" content="Rafflie">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,300' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Roboto:400,100,300' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="/static/css/boostrap.css">
+
+  <link rel="stylesheet" href="/static/css/font_awesome.css">
+
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="shortcut icon" type="image/png" href="/static/img/favicon.png" />
+
+  <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css" />
+
+  <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick-theme.css" />
+
+  <link rel="stylesheet" href="/static/css/mystyles.css">
+
+  <style>
+    html {
+      overflow-y: visible !important;
+      background: #f2f2f2;
+    }
+
+    *:focus {
+      outline: none;
+    }
+
+    .statsheader {
+      flex: 1;
+      flex-direction: row;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+    }
+
+    .win_overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(251, 251, 251, 0.15);
+      background-image: url(/static/img/youwin.png);
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position-y: 50%;
+
+      color: white;
+      filter: invert(100%);
+      -webkit-filter: invert(100%);
+      box-shadow: 2px 8px 20px 5px #282a2d;
+    }
+
+    .txt {
+      display: inline-block;
+      vertical-align: middle;
+      padding: 10px 15px;
+      position: relative;
+      font-weight: bold;
+    }
+
+    .raffle_stat {
+
+      padding-right: 20px;
+      font-size: 20px;
+    }
+
+    .good {
+      color: green;
+    }
+
+    .bad {
+
+      color: red;
+    }
+
+    td {
+
+      padding-top: 23px !important;
+      vertical-align: middle !important;
+    }
+
+    h5 .fa {
+      font-size: x-large;
+      padding-top: 5px;
+    }
+
+    .mytab {
+      width: 33% !important;
+      text-align: center !important;
+    }
+
+    .gauge svg g g text {
+      font-size: 4px;
+    }
+
+    svg:first-child>g>text[text-anchor~=middle] {
+      font-size: 10px;
+    }
+  </style>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script type="text/javascript">
+    var timenow = '{{ timenow }}';
+    var raffle_endtime = '{{ raffle.formatted_end_time }}';
+    var diff = '{{ diff }}';
+    var t = new Date();
+
+    t.setSeconds(t.getSeconds() + diff);
+    raffle_endtime = new Date(new Date().getTime() + diff * 1000);
+
+    google.charts.load('current', {
+      'packages': ['corechart', 'gauge']
+    });
+    google.charts.setOnLoadCallback(drawChart);
+    var entries = JSON.parse('{{ raffle_stats.json_entries|safe }}');
+    var chart_data = [];
+    for (var i = 0; i < entries.length; i++) {
+      var entry = entries[i];
+      for (var j = 0; j < entry.bundles.length; j++) {
+        var bundle = entry.bundles[j];
+        chart_data.push([new Date(bundle.entered), bundle.bundle_amount])
+      }
+    }
+    chart_data.unshift(['Time', 'Tickets']);
+
+    function drawChart() {
+
+
+      var data = google.visualization.arrayToDataTable(chart_data);
+
+      var options = {
+        title: 'Tickets over Time',
+        hAxis: {
+          title: 'Time',
+          format: 'HH:mm'
+        },
+        vAxis: {
+          title: 'Tickets'
+        },
+        legend: 'none'
+      };
+
+      var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
+
+      chart.draw(data, options);
+
+
+      var data2 = google.visualization.arrayToDataTable([
+        ['Label', 'Value'],
+        ['Average Weight', {
+          {
+            raffle_stats.average_weight
+          }
+        }],
+        ['Users Entered', {
+          {
+            raffle_stats.users_percent
+          }
+        }],
+        ['Highest Weight', {
+          {
+            raffle_stats.highest_percent
+          }
+        }],
+        ['Lowest Weight', {
+          {
+            raffle_stats.lowest_percent
+          }
+        }]
+      ]);
+
+      var options2 = {
+        width: 700,
+        height: 320,
+
+        redFrom: 90,
+        redTo: 100,
+        yellowFrom: 75,
+        yellowTo: 90,
+        minorTicks: 5
+      };
+
+      var chart2 = new google.visualization.Gauge(document.getElementById('chart_div2'));
+
+      chart2.draw(data2, options2);
+
+
+    }
+  </script>
+
+</head>
+
+
+
+<body class="{% if request.user.is_authenticated %}logged-in{% else %}logged-out{% endif %}">
+
+
+
+
+
+  <div class="global-wrap">
+
+
+
+
+    <header class="main" style="position: relative; z-index:4;">
+      <div class="container">
+        <div class="row">
+
+          <div class="col-md-12">
+
+
+
+            {% if request.user.is_authenticated %}
+            <div id="profilediv2" class="float-right" onclick="$('.profile-box').toggle();" style="position: absolute; right:0; opacity:0; width:200px; z-index:1000;">
+              <span id="profileimg" class="popup-text"><img src="{{ request.user.profile.profile_image_url }}" /></span>
+            </div>
+            {% endif %}
+            <div class="flexnav-menu-button" id="flexnav-menu-button" style="line-height:50px;"><a href="javascript:void(0)" class="mobile-logo logo mt5">
+              <img src="/static/img/newlogo.png" alt="Image Alternative text" title="Image Title" id="imglogo" style="vertical-align: initial;">
+
+            </a></div>
+            <div id="profilediv" class="float-right" style="height: 53px;">
+              {% if request.user.is_authenticated %}
+
+              <span id="profileimg" class="popup-text"><img src="{{ request.user.profile.profile_image_url }}" /></span> {% if request.user.first_name or request.user.last_name %} {{ request.user.first_name }} {{ request.user.last_name }} {% else %} {{
+              request.user.username }} {% endif %} {% if request.user.profile.account_verified%}
+              <i class="fa fa-check"></i> {% else %} (unverified) {% endif %} {% else %}
+
+              <div class="popup-text" style="width:100%; height:50px; position: absolute; right:0;"></div>
+
+              {% endif %}
+            </div>
+            {% if not request.user.is_authenticated %}
+            <span id="profileimg" class="popup-text"><img src="{{ request.user.profile.profile_image_url }}" /></span> {% endif %}
+            <div class="profile-box" style='z-index:1000;'>
+              {% if request.user.is_authenticated %}
+              <button style="margin-top: 2px;" class="btn btn-primary btn-lg btn-block"><a href="/accounts/logout/"><i class="fa fa-sign-in"></i>Logout</a></button> {% else %} {% endif %}
+              </ul>
+            </div>
+            <nav>
+
+
+              <ul class="nav nav-pills flexnav" id="flexnav" style="z-index: 3;">
+                <div class="top-main-area text-center" id="mainlogo" style="line-height:50px;">
+
+                  <a href="/" class="logo mt5">
+                        <img src="/static/img/newlogo.png" alt="Image Alternative text" title="Image Title" id="imglogo" >
+
+
+                      </a>
+
+                </div>
+                <li class="active"><a href="#">Home</a></li>
+                <li><a href="#">About</a>
+
+                </li>
+                <li><a href="#">FAQ </a>
+
+                </li>
+                <li><a href="#">Contact</a>
+
+                </li>
+
+                <li class="float-right"><a href="#"><i class="fa fa-ticket"></i>
+                {% if request.user.is_authenticated %}
+                {{ raffle_user.tickets }}
+              {% endif %}
+                  Tickets
+            </a>
+
+                </li>
+                {% if request.user.is_authenticated %} {% else %}
+                <li class='float-right'><a class="popup-text" href="#login-dialog" data-effect="mfp-move-from-top"><i style="padding-right:5px;" class="fa fa-sign-in"></i>Login/Signup</a>
+                </li>
+
+                {% endif %}
+
+              </ul>
+
+
+
+            </nav>
+
+          </div>
+
+        </div>
+    </header>
+
+
+
+
+
+    <div id="login-dialog" class="mfp-with-anim mfp-hide mfp-dialog clearfix" style="z-index: 4;">
+      <script id="facebook-jssdk" async="" src="//connect.facebook.net/en-US/sdk.js"></script>
+      <i class="fa fa-sign-in dialog-icon"></i>
+      <h3>Member Login</h3>
+      <h5>Welcome back, friend. Login to get started</h5> {% load i18n %} {% load account %}
+      <p></p>
+      {% block content %}
+      <div>
+        {% include "socialaccount/snippets/login_extra.html" %}
+        <a style="width:100%; background:#42709e !important;" id="facebook_login" href="javascript:allauth.facebook.login%28%27%27%2C%20%27authenticate%27%2C%20%27login%27%29" class="btn btn-success socialaccount_provider facebook">
+        Sign in with Facebook
+      </a>
+
+        <hr>
+
+        <div class="footnote">
+          Don't have an account? Just Sign in with Facebook and you'll be all set! It's absolutely FREE and super-duper awesome!
+
+        </div>
+      </div>
+
+      {% endblock %}
+
+    </div>
+
+
+    <div id="register-dialog" class="mfp-with-anim mfp-hide mfp-dialog clearfix">
+      <i class="fa fa-ticket dialog-icon"></i> {% if request.user.is_authenticated %}
+      <h3>Enter Tickets for Raffle</h3>
+      <h5>Choose how many tickets to enter below. Good Luck!</h5>
+      <h6 style='font-style: italic;font-style: italic;text-align: -webkit-center;padding-top: 10px;color: red;'>You have {{ raffle_user.tickets }} tickets.</h6>
+
+      <form class="dialog-form" action="/enter_tickets/" method="post">
+        {% csrf_token %}
+
+        <div class="row">
+
+          <div class="col-md-12" style="text-align: center;">
+            <div class="form-group">
+              <label>How many tickets do you want to enter?</label>
+              <input type="text" id="id_tickets" name="tickets" placeholder="# of Tickets" class="form-control" style="text-align:center; width:80%;margin-left: auto;margin-right: auto;" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-12" style="text-align: center;">
+          <input type="submit" value="Enter Tickets" class="btn btn-primary" style="text-align:center; width:100%;">
+        </div>
+      </form>
+      {% else %}
+      <h3>Login or Create a Free Account</h3>
+      <h5>Accounts are Free, Tickets are Free, Caring is Sharing!</h5>
+
+      <div class="row">
+
+        <div class="col-md-12" style="text-align: center;">
+          <div class="form-group">
+            <script id="facebook-jssdk" async="" src="//connect.facebook.net/en-US/sdk.js"></script>
+
+            <br> {% load i18n %} {% load account %}
+
+
+            <div>
+              {% include "socialaccount/snippets/login_extra.html" %}
+              <a style="width:100%; background:#42709e !important;" id="facebook_login" href="javascript:allauth.facebook.login%28%27%27%2C%20%27authenticate%27%2C%20%27login%27%29" class="btn btn-success socialaccount_provider facebook">
+              Sign in with Facebook
+            </a>
+
+              <hr>
+
+
+              <div class="footnote">
+                Don't have an account? Just Sign in with Facebook and you'll be all set!
+                <br><br> <i>It's absolutely FREE and super-duper awesome!</i>
+
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+
+
+    <div id="password-recover-dialog" class="mfp-with-anim mfp-hide mfp-dialog clearfix">
+      <i class="icon-retweet dialog-icon"></i>
+      <h3>Password Recovery</h3>
+      <h5>Fortgot your password? Don't worry we can deal with it</h5>
+      <form class="dialog-form">
+        <label>E-mail</label>
+        <input type="text" placeholder="email@domain.com" class="span12">
+        <input type="submit" value="Request new password" class="btn btn-primary">
+      </form>
+    </div>
+
+    {% if form_status is not None %}
+
+    <div class="alert alert-info" style="text-align: center;z-index:1000;">
+      <button type="button" class="close" data-dismiss="alert" style="z-index:1000;">×</button> {{ form_status }}
+    </div>
+
+    {% endif %}
+
+
+    <div class="container" style="height: 100vh !important;">
+      {% if verified is not None %} {% load i18n %} {% load account %}
+      <div style="text-align: center; width: 100%;">
+        {% block head_title %}{% trans "Confirm E-mail Address" %}{% endblock %}
+
+
+        <h1>{% trans "Confirm E-mail Address" %}</h1> {% if confirmation %} {% user_display confirmation.email_address.user as user_display %}
+
+        <p>{% blocktrans with confirmation.email_address.email as email %}Please confirm that <a href="mailto:{{email}}">{{ email }}</a> is an e-mail address for user {{ user_display }}.{% endblocktrans %}</p>
+
+        <form method="post" action="{% url 'account_confirm_email' confirmation.key %}">
+          {% csrf_token %}
+          <button type="submit">{% trans 'Confirm' %}</button>
+        </form>
+
+        {% else %} {% url 'account_email' as email_url %}
+
+        <p>{% blocktrans %}This e-mail confirmation link expired or is invalid. Please <a href="{{ email_url}}">issue a new e-mail confirmation request</a>.{% endblocktrans %}</p>
+      </div>
+      {% endif %} {% endif %} {% if resend_verification is not None %} {% load i18n %} {% load account %}
+      <div style="text-align: center; width: 100%;">
+
+        <h1>{% trans "E-mail Addresses" %}</h1> {% if user.emailaddress_set.all %}
+        <p>{% trans 'The following e-mail addresses are associated with your account:' %}</p>
+
+        <form action="{% url 'account_email' %}" class="email_list" method="post">
+          {% csrf_token %}
+          <fieldset class="blockLabels">
+
+            {% for emailaddress in user.emailaddress_set.all %}
+            <div class="ctrlHolder">
+              <label for="email_radio_{{forloop.counter}}" class="{% if emailaddress.primary %}primary_email{%endif%}">
+
+            <input id="email_radio_{{forloop.counter}}" type="radio" name="email" {% if emailaddress.primary or user.emailaddress_set.count == 1 %}checked="checked"{%endif %} value="{{emailaddress.email}}"/>
+
+      {{ emailaddress.email }}
+          {% if emailaddress.verified %}
+          <span class="verified">{% trans "Verified" %}</span>
+          {% else %}
+          <span class="unverified">{% trans "Unverified" %}</span>
+          {% endif %}
+            {% if emailaddress.primary %}<span class="primary">{% trans "Primary" %}</span>{% endif %}
+      </label>
+            </div>
+            {% endfor %}
+
+            <div class="buttonHolder">
+
+              <button class="secondaryAction" type="submit" name="action_send">{% trans 'Re-send Verification' %}</button>
+              <button class="primaryAction" type="submit" name="action_remove">{% trans 'Remove' %}</button>
+            </div>
+
+          </fieldset>
+        </form>
+
+        {% else %}
+        <p><strong>{% trans 'Warning:'%}</strong> {% trans "You currently do not have any e-mail address set up. You should really add an e-mail address so you can receive notifications, reset your password, etc." %}</p>
+
+        {% endif %} {% block extra_body %} {% endblock %}
+      </div>
+      {% endif %}
+      <div class="row">
+
+        <div class="col-md-12">
+          <div class="row">
+            <div class="col-md-9 box" style="margin-bottom: 15px;margin-top: 15px;padding-top: 15px;text-align: -webkit-center;">
+
+
+              <div id="ownerlogo" style='top: 0;
+  height: 50px;
+  line-height: 50px;
+  z-index: 1;
+  text-align: left;
+  border: 1px dashed #4fc7b7;
+  border-right: 0px;
+  border-left: 0px;
+  border-top: 0px;
+  margin-bottom: 25px;'>
+                <div><img src="{{ raffle.owner.logo }}" style="max-height: 40px; padding-bottom: 5px;"></img><span style="padding: 15px;font-size: 24px;">Raffle Report</span></div>
+              </div>
+              <div class='statsheader'>
+                <div><img src="/static/img/count.png" style="max-height: 40px; padding-bottom: 5px;"></img><span style="padding: 15px;font-size: 18px;font-style: italic;">Hard Numbers</span></div><button type="button" class="btn btn-info toggle-text" data-toggle="collapse"
+                  data-target="#hardnums">See <span>more</span><span class="hidden">less</span></button></div>
+              <div id="hardnums" class="collapse">
+                <table class="table cart-table">
+                  <tr>
+                    <td>
+                      <h5>Total Tickets Entered</h5></td>
+                    <td>
+                      <h5><span class='raffle_stat'>{{ raffle_stats.total_tickets }}</span><i class="fa fa-ticket" aria-hidden="true"></i></h5></td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <h5>Total Users Entered</h5></td>
+                    <td>
+                      <h5><span class='raffle_stat'>{{ raffle_stats.total_users }}</span><i class="fa fa-users" aria-hidden="true"></i></h5></td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <h5>Average # of Tickets Entered/User</h5></td>
+                    <td>
+                      <h5><span class='raffle_stat'>{{ raffle_stats.average_amount }}</span><i class="fa fa-ticket" aria-hidden="true"></i></h5></td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <h5>Most Tickets Entered (Single User)</h5></td>
+                    <td>
+                      <h5><span class='raffle_stat good'>{{ raffle_stats.most_tickets }}</span><i class="fa fa-ticket" aria-hidden="true"></i></h5></td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <h5>Least Tickets Entered (Single User)</h5></td>
+                    <td>
+                      <h5><span class='raffle_stat bad'>{{ raffle_stats.least_tickets }}</span><i class="fa fa-ticket" aria-hidden="true"></i></h5></td>
+                  </tr>
+
+                </table>
+              </div>
+              <hr>
+
+
+              <div class="statsheader">
+                <div><img src="/static/img/percent.png" style="max-height: 40px; padding-bottom: 5px;"></img><span style="padding: 15px;font-size: 18px;font-style: italic;">Percentages</span></div><button type="button" class="btn btn-info toggle-text" data-toggle="collapse"
+                  data-target="#chart_div2">See <span>more</span><span class="hidden">less</span></button></div>
+              <div id="chart_div2" class="collapse" style="width: 100%; overflow-x: scroll; overflow-y: hidden"></div>
+
+              <hr>
+
+
+              <div class="statsheader">
+                <div><img src="/static/img/clock.png" style="max-height: 40px; padding-bottom: 5px;"></img><span style="padding: 15px;font-size: 18px;font-style: italic;">Tickets Over Time</span></div><button type="button" class="btn btn-info toggle-text"
+                  data-toggle="collapse" data-target="#chart_div">See <span>more</span><span class="hidden">less</span></button></div>
+              <div id="chart_div" class="collapse" style="width: 100%; height: 500px; overflow-x: scroll; overflow-y: hidden"></div>
+
+              <hr>
+
+              <div class="statsheader">
+                <div><img src="/static/img/clipboard.png" style="max-height: 40px; padding-bottom: 5px;"></img><span style="padding: 15px;font-size: 18px;font-style: italic;">Entry Breakdown</span></div><button type="button" class="btn btn-info toggle-text"
+                  data-toggle="collapse" data-target="#breakdown">See <span>more</span><span class="hidden">less</span></button></div>
+              <div id="breakdown" style="overflow-x: scroll;" class="collapse">
+                <table class="table cart-table" style="width: 100%; overflow-x: scroll; overflow-y: hidden;">
+                  {% for entry in raffle_stats.entries %}
+                  <tr>
+                    <td>
+                      <h5>{{ entry.name }}</h5></td>
+
+                    <td>
+                      <table class="table cart-table" style="width: 100%; overflow-x: scroll; overflow-y: hidden;">
+                        {% for bundle in entry.bundles %}
+                        <tr>
+                          <td>
+                            <h5>Bundle Amount</h5></td>
+                          <td>
+                            <h5>{{ bundle.bundle_amount }}</h5></td>
+                          <td>
+                            <h5>Bundle Weight</h5></td>
+                          <td>
+                            <h5>{{ bundle.bundle_weight }}%</h5></td>
+                          <td>
+                            <h5>{{ bundle.entered }}</h5></td>
+                        </tr>
+                        {% endfor %}
+                      </table>
+
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </table>
+              </div>
+            </div>
+
+
+            <div class="col-md-3">
+              <div class="product-page-meta box" id="swiper">
+                {% if raffle is not None %} {% if raffle.owner.logo is not None %}
+                <div id="ownerlogo" style='top: 0;
+    height: 50px;
+    line-height: 50px;
+    z-index: 1;
+    text-align: center;
+    border: 1px dashed #4fc7b7;
+    border-right: 0px;
+    border-left: 0px;
+    border-top: 0px;
+    margin-bottom: 10px;'><img src="{{ raffle.owner.logo }}" style="max-height: 40px; padding-bottom: 5px;"></img>
+                </div>
+                {% endif %}
+                <h4>{{ raffle.name }}</h4> {% else %}
+                <h4>New Raffle Coming Soon...</h4> {% endif %} {% if raffle is not None and raffle.short_description is not None %}
+                <p class="short-description">{{ raffle.short_description }}</p>
+
+
+                <div class="alert alert-info" style="text-align:center;">
+                  {% if raffle is not None %} {{ raffle.tickets }}+ {% else %} 0 {% endif %} Entered
+                </div>
+
+                {% else %}
+                <p>Check back in regularly for updates, we'll keep giving you free tickets each day you log in!</p>
+                {% endif %}
+
+
+                <ul class="list product-page-meta-info">
+                  {% if raffle is not None and raffle.num_of_winners is not None and raffle.est_value is not None %}
+                  <li>
+                    <ul class="list product-page-meta-price-list">
+                      <li><span class="product-page-meta-title">Winners:</span><span class="product-page-meta-price">{{ raffle.num_of_winners }}</span>
+                      </li>
+                      <li style="float:right;"><span class="product-page-meta-title">Est. Value</span><span class="product-page-meta-price">{{ raffle.est_value }}</span>
+                      </li>
+                      <li><span class="product-page-meta-title"></span><span class="product-page-meta-price"></span>
+                      </li>
+                    </ul>
+                  </li>
+                  {% endif %} {% if raffle is not None and raffle.formatted_end_time is not None and raffle.status != 0 %}
+                  <li><span class="product-page-meta-title" id='raffletimetitle'>Time Left to Enter</span>
+
+                    <div id="countdowndiv" data-countdown="" class="countdown countdown-inline"></div>
+                  </li>
+                  {% else %}
+                  <li><span class="product-page-meta-title">Raffle Closed</span>
+
+                  </li>
+                  {% endif %}
+
+
+
+
+                </ul>
+
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+
+      </div>
+
+      <footer class="main" id="main-footer" style="width: 100%; position: absolute; left: 0;">
+        <div class="footer-top-area">
+          <div class="container">
+            <div class="row row-wrap">
+              <div class="col-md-3">
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+
+
+      <script>
+      document
+  .getElementById("countdowndiv")
+  .setAttribute("data-countdown", raffle_endtime);
+</script>
+
+      <script src="/static/js/jquery.js"></script>
+      <script src="/static/js/boostrap.min.js"></script>
+      <script src="/static/js/countdown.js"></script>
+      <script src="/static/js/flexnav.js"></script>
+      <script src="/static/js/magnific.js"></script>
+      <script src="/static/js/tweet.min.js"></script>
+      <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+      <script src="/static/js/fitvids.min.js"></script>
+      <script src="/static/js/mail.min.js"></script>
+      <script src="/static/js/ionrangeslider.js"></script>
+      <script src="/static/js/icheck.js"></script>
+      <script src="/static/js/fotorama.js"></script>
+      <script src="/static/js/card-payment.js"></script>
+      <script src="/static/js/owl-carousel.js"></script>
+      <script src="/static/js/masonry.js"></script>
+      <script src="/static/js/nicescroll.js"></script>
+      <script src="https://hammerjs.github.io/dist/hammer.js"></script>
+
+      <script src="/static/js/jquery.fireworks.js"></script>
+      <script type="text/javascript" src="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.min.js"></script>
+
+      <script src="/static/js/custom.js"></script>
+      <script>
+      $(".hidden")
+  .removeClass("hidden")
+  .hide();
+$(".toggle-text").click(function() {
+  $(this)
+    .find("span")
+    .each(function() {
+      $(this).toggle();
+    });
+});
+</script>
+    </div>
+
+</body>
+
+</html>

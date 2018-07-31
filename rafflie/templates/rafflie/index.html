@@ -1,0 +1,905 @@
+<!DOCTYPE HTML> {% load static %}
+<html>
+
+<head>
+  <title>Rafflie</title>
+  {% block extra_head %} {% endblock %}
+  <!-- meta info -->
+  <meta property="og:url" content="https://www.rafflie.com" />
+  <meta property="og:type" content="website" />
+
+
+  <meta property="og:image" content="http://rafflie.com/static/img/newlogo.png" />
+  <meta property="og:title" content="Rafflie - Totally Free Raffles" />
+  <meta property="og:description" content="Get your free tickets now for this hot new product we're raffling!" />
+
+
+  <meta property="fb:app_id" content="1285512478176566" />
+  <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+  <meta name="keywords" content="Rafflie - Totally Free Raffles" />
+  <meta name="description" content="Get your free tickets now for this hot new product we're raffling!">
+  <meta name="author" content="Rafflie">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google fonts -->
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,300' rel='stylesheet' type='text/css'>
+  <link href='http://fonts.googleapis.com/css?family=Roboto:400,100,300' rel='stylesheet' type='text/css'>
+  <!-- Bootstrap styles -->
+  <link rel="stylesheet" href="../static/css/boostrap.css">
+  <!-- Font Awesome styles (icons) -->
+  <link rel="stylesheet" href="../static/css/font_awesome.css">
+  <!-- Main Template styles -->
+  <link rel="stylesheet" href="../static/css/styles.css">
+  <link rel="shortcut icon" type="image/png" href="../static/img/favicon.png" />
+  <!-- IE 8 Fallback -->
+  <!--[if lt IE 9]>
+	<link rel="stylesheet" type="text/css" href="../static/css/ie.css" />
+<![endif]-->
+  <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css" />
+  < <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick-theme.css" />
+
+  <link rel="stylesheet" href="../static/css/mystyles.css">
+
+  <style>
+    *:focus {
+      outline: none;
+    }
+
+    .win_overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(251, 251, 251, 0.15);
+      background-image: url(../static/img/youwin.png);
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position-y: 50%;
+      color: white;
+      filter: invert(100%);
+      -webkit-filter: invert(100%);
+      box-shadow: 2px 8px 20px 5px #282a2d;
+    }
+
+    .txt {
+      display: inline-block;
+      vertical-align: middle;
+      padding: 10px 15px;
+      position: relative;
+      font-weight: bold;
+    }
+
+    .mytab {
+      width: 33% !important;
+      text-align: center !important;
+    }
+  </style>
+
+  <script>
+  var csrftoken = "{{ csrf_token }}";
+var raffle_id = "{{ raffle.id }}";
+var winners = "{{ winners }}";
+var timenow = "{{ timenow }}";
+var raffle_endtime = "{{ raffle.formatted_end_time }}";
+var diff = "{{ diff }}";
+var raffle_product_image = "{{ raffle.product.image1 }}";
+var raffle_name = "{{ raffle.name }}";
+var raffle_description = "{{ raffle.short_description|escapejs }}";
+var t = new Date();
+var raffle_ids = JSON.parse("{{ raffle_ids }}");
+var raffle_images = JSON.parse("{{ raffle_images|safe }}");
+var raffle_logos = JSON.parse("{{ raffle_logos|safe }}");
+
+t.setSeconds(t.getSeconds() + diff);
+raffle_endtime = new Date(new Date().getTime() + diff * 1000);
+</script>
+
+  <script>
+  (function(i, s, o, g, r, a, m) {
+  i["GoogleAnalyticsObject"] = r;
+  (i[r] =
+    i[r] ||
+    function() {
+      (i[r].q = i[r].q || []).push(arguments);
+    }),
+    (i[r].l = 1 * new Date());
+  (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+  a.async = 1;
+  a.src = g;
+  m.parentNode.insertBefore(a, m);
+})(
+  window,
+  document,
+  "script",
+  "https://www.google-analytics.com/analytics.js",
+  "ga"
+);
+
+ga("create", "UA-90232522-1", "auto");
+ga("send", "pageview");
+</script>
+</head>
+
+
+
+<body class="{% if request.user.is_authenticated %}logged-in{% else %}logged-out{% endif %}">
+
+
+
+
+
+  <div class="global-wrap">
+
+
+    <!-- //////////////////////////////////
+	//////////////MAIN HEADER/////////////
+	////////////////////////////////////-->
+
+
+    <header class="main" style="position: relative; z-index:4;">
+      <div class="container">
+        <div class="row">
+
+          <div class="col-md-12">
+
+
+            <!-- MAIN NAVIGATION -->
+            {% if request.user.is_authenticated %}
+            <div id="profilediv2" class="float-right" onclick="$('.profile-box').toggle();" style="position: absolute; right:0; opacity:0; width:200px; z-index:1000;">
+              <span id="profileimg" class="popup-text"><img src="{{ request.user.profile.profile_image_url }}" /></span>
+            </div>
+            {% endif %}
+            <div class="flexnav-menu-button" id="flexnav-menu-button" style="line-height:50px;"><a href="javascript:void(0)" class="mobile-logo logo mt5">
+              <img src="../static/img/newlogo.png" alt="Image Alternative text" title="Image Title" id="imglogo" style="vertical-align: initial;">
+
+            </a></div>
+            <div id="profilediv" class="float-right" style="height: 53px;">
+              {% if request.user.is_authenticated %}
+
+              <span id="profileimg" class="popup-text"><img src="{{ request.user.profile.profile_image_url }}" /></span> {% if request.user.first_name or request.user.last_name %} {{ request.user.first_name }} {{ request.user.last_name }} {% else %} {{
+              request.user.username }} {% endif %} {% if request.user.profile.account_verified%}
+              <i class="fa fa-check"></i> {% else %} (unverified) {% endif %} {% else %}
+
+              <div class="popup-text" style="width:100%; height:50px; position: absolute; right:0;"></div>
+
+              {% endif %}
+            </div>
+            {% if not request.user.is_authenticated %}
+            <span id="profileimg" class="popup-text"><img src="{{ request.user.profile.profile_image_url }}" /></span> {% endif %}
+            <div class="profile-box" style='z-index:1000;'>
+              {% if request.user.is_authenticated %}
+              <button style="margin-top: 2px;" class="btn btn-primary btn-lg btn-block"><a href="/accounts/logout/"><i class="fa fa-sign-in"></i>Logout</a></button> {% else %} {% endif %}
+              </ul>
+            </div>
+            <nav>
+
+
+              <ul class="nav nav-pills flexnav" id="flexnav" style="z-index: 3;">
+                <div class="top-main-area text-center" id="mainlogo" style="line-height:50px;">
+
+                  <a href="/" class="logo mt5">
+                        <img src="../static/img/newlogo.png" alt="Image Alternative text" title="Image Title" id="imglogo" >
+
+
+                      </a>
+
+                </div>
+                <li class="active"><a href="#">Home</a></li>
+                <li><a href="#">About</a>
+
+                </li>
+                <li><a href="#">FAQ </a>
+
+                </li>
+                <li><a href="#">Contact</a>
+
+                </li>
+
+                <li class="float-right"><a href="#"><i class="fa fa-ticket"></i>
+                {% if request.user.is_authenticated %}
+                {{ raffle_user.tickets }}
+              {% endif %}
+                  Tickets
+            </a>
+
+                </li>
+                {% if request.user.is_authenticated %} {% else %}
+                <li class='float-right'><a class="popup-text" href="#login-dialog" data-effect="mfp-move-from-top"><i style="padding-right:5px;" class="fa fa-sign-in"></i>Login/Signup</a>
+                </li>
+
+
+
+                {% endif %}
+
+              </ul>
+
+
+
+            </nav>
+
+          </div>
+
+        </div>
+    </header>
+
+
+    <div id='fireworks' style="width: 100%; height: 100%; position:absolute; z-index:-1;">
+
+    </div>
+
+    <!-- LOGIN REGISTER LINKS CONTENT -->
+    <div id="login-dialog" class="mfp-with-anim mfp-hide mfp-dialog clearfix" style="z-index: 4;">
+      <script id="facebook-jssdk" async="" src="//connect.facebook.net/en-US/sdk.js"></script>
+      <i class="fa fa-sign-in dialog-icon"></i>
+      <h3>Member Login</h3>
+      <h5>Welcome back, friend. Login to get started</h5> {% load i18n %} {% load account %}
+      <p></p>
+      {% block content %}
+      <div>
+        {% include "socialaccount/snippets/login_extra.html" %}
+        <a style="width:100%; background:#42709e !important;" id="facebook_login" href="javascript:allauth.facebook.login%28%27%27%2C%20%27authenticate%27%2C%20%27login%27%29" class="btn btn-success socialaccount_provider facebook">
+        Sign in with Facebook
+      </a>
+
+        <hr>
+
+
+        <div class="footnote">
+          Don't have an account? Just Sign in with Facebook and you'll be all set! It's absolutely FREE and super-duper awesome!
+
+        </div>
+      </div>
+
+      {% endblock %}
+
+    </div>
+
+
+    <div id="address-dialog" style="z-index: 2;" class="mfp-with-anim mfp-hide mfp-dialog clearfix">
+      <i class="fa fa-ticket dialog-icon"></i>
+
+      <h3>Please Provide Your Address</h3>
+      <h5>Congratulations on winning this raffle!</h5>
+      <h6 style='font-style: italic;font-style: italic;padding-top: 10px;color: red;'>Tell us where you'd like us to send your new product.</h6>
+
+      <form class="dialog-form" action="/enter_address/" method="post">
+        {% csrf_token %}
+
+        <div class="row">
+
+          <div class="col-md-12" style="text-align: center;">
+            <div class="form-group">
+              <label style=" width:80%;margin-left: auto;margin-right: auto;">Full Name</label>
+              <input type="text" id="fullname" name="fullname" placeholder="Full Name" class="form-control" style=" width:80%;margin-left: auto;margin-right: auto;" required>
+              <br>
+              <label style=" width:80%;margin-left: auto;margin-right: auto;">Address</label>
+              <input type="text" id="address" name="address" placeholder="Address" class="form-control" style=" width:80%;margin-left: auto;margin-right: auto;" required>
+              <br>
+              <label style=" width:80%;margin-left: auto;margin-right: auto;">City</label>
+              <input type="text" id="city" name="city" placeholder="City" class="form-control" style=" width:80%;margin-left: auto;margin-right: auto;" required>
+              <br>
+              <label style=" width:80%;margin-left: auto;margin-right: auto;">State</label>
+
+              <select id="state" name="state" class="form-control" style=" width:80%;margin-left: auto;margin-right: auto;" required>
+              	<option value="AL">Alabama</option>
+              	<option value="AK">Alaska</option>
+              	<option value="AZ">Arizona</option>
+              	<option value="AR">Arkansas</option>
+              	<option value="CA">California</option>
+              	<option value="CO">Colorado</option>
+              	<option value="CT">Connecticut</option>
+              	<option value="DE">Delaware</option>
+              	<option value="DC">District Of Columbia</option>
+              	<option value="FL">Florida</option>
+              	<option value="GA">Georgia</option>
+              	<option value="HI">Hawaii</option>
+              	<option value="ID">Idaho</option>
+              	<option value="IL">Illinois</option>
+              	<option value="IN">Indiana</option>
+              	<option value="IA">Iowa</option>
+              	<option value="KS">Kansas</option>
+              	<option value="KY">Kentucky</option>
+              	<option value="LA">Louisiana</option>
+              	<option value="ME">Maine</option>
+              	<option value="MD">Maryland</option>
+              	<option value="MA">Massachusetts</option>
+              	<option value="MI">Michigan</option>
+              	<option value="MN">Minnesota</option>
+              	<option value="MS">Mississippi</option>
+              	<option value="MO">Missouri</option>
+              	<option value="MT">Montana</option>
+              	<option value="NE">Nebraska</option>
+              	<option value="NV">Nevada</option>
+              	<option value="NH">New Hampshire</option>
+              	<option value="NJ">New Jersey</option>
+              	<option value="NM">New Mexico</option>
+              	<option value="NY">New York</option>
+              	<option value="NC">North Carolina</option>
+              	<option value="ND">North Dakota</option>
+              	<option value="OH">Ohio</option>
+              	<option value="OK">Oklahoma</option>
+              	<option value="OR">Oregon</option>
+              	<option value="PA">Pennsylvania</option>
+              	<option value="RI">Rhode Island</option>
+              	<option value="SC">South Carolina</option>
+              	<option value="SD">South Dakota</option>
+              	<option value="TN">Tennessee</option>
+              	<option value="TX">Texas</option>
+              	<option value="UT">Utah</option>
+              	<option value="VT">Vermont</option>
+              	<option value="VA">Virginia</option>
+              	<option value="WA">Washington</option>
+              	<option value="WV">West Virginia</option>
+              	<option value="WI">Wisconsin</option>
+              	<option value="WY">Wyoming</option>
+              </select>
+              <br>
+              <label style=" width:80%;margin-left: auto;margin-right: auto;">ZipCode</label>
+              <input type="text" id="zipcode" name="zipcode" placeholder="ZipCode" class="form-control" style=" width:80%;margin-left: auto;margin-right: auto;" required>
+              <br>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-12" style="text-align: center;">
+          <input type="submit" value="Submit Address" class="btn btn-primary" style="text-align:center; width:100%;">
+        </div>
+      </form>
+
+
+    </div>
+
+
+
+    <div id="register-dialog" class="mfp-with-anim mfp-hide mfp-dialog clearfix">
+      <i class="fa fa-ticket dialog-icon"></i> {% if request.user.is_authenticated %}
+      <h3>Enter Tickets for Raffle</h3>
+      <h5>Choose how many tickets to enter below. Good Luck!</h5>
+      <h6 style='font-style: italic;font-style: italic;text-align: -webkit-center;padding-top: 10px;color: red;'>You have {{ raffle_user.tickets }} tickets.</h6>
+
+      <form class="dialog-form" action="/enter_tickets/" method="post">
+        {% csrf_token %}
+
+        <div class="row">
+
+          <div class="col-md-12" style="text-align: center;">
+            <div class="form-group">
+              <label>How many tickets do you want to enter?</label>
+              <input type="text" id="id_tickets" name="tickets" placeholder="# of Tickets" class="form-control" style="text-align:center; width:80%;margin-left: auto;margin-right: auto;" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-12" style="text-align: center;">
+          <input type="submit" value="Enter Tickets" class="btn btn-primary" style="text-align:center; width:100%;">
+        </div>
+      </form>
+      {% else %}
+      <h3>Login or Create a Free Account</h3>
+      <h5>Accounts are Free, Tickets are Free, Caring is Sharing!</h5>
+
+      <div class="row">
+
+        <div class="col-md-12" style="text-align: center;">
+          <div class="form-group">
+            <script id="facebook-jssdk" async="" src="//connect.facebook.net/en-US/sdk.js"></script>
+
+            <br> {% load i18n %} {% load account %}
+
+
+            <div>
+              {% include "socialaccount/snippets/login_extra.html" %}
+              <a style="width:100%; background:#42709e !important;" id="facebook_login" href="javascript:allauth.facebook.login%28%27%27%2C%20%27authenticate%27%2C%20%27login%27%29" class="btn btn-success socialaccount_provider facebook">
+              Sign in with Facebook
+            </a>
+
+              <hr>
+
+
+              <div class="footnote">
+                Don't have an account? Just Sign in with Facebook and you'll be all set!
+                <br><br> <i>It's absolutely FREE and super-duper awesome!</i>
+
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+
+
+
+    <div id="password-recover-dialog" class="mfp-with-anim mfp-hide mfp-dialog clearfix">
+      <i class="icon-retweet dialog-icon"></i>
+      <h3>Password Recovery</h3>
+      <h5>Fortgot your password? Don't worry we can deal with it</h5>
+      <form class="dialog-form">
+        <label>E-mail</label>
+        <input type="text" placeholder="email@domain.com" class="span12">
+        <input type="submit" value="Request new password" class="btn btn-primary">
+      </form>
+    </div>
+
+
+
+    {% if form_status is not None %}
+
+    <div class="alert alert-info" style="text-align: center;z-index:1000;">
+      <button type="button" class="close" data-dismiss="alert" style="z-index:1000;">×</button> {{ form_status }}
+    </div>
+
+    {% endif %}
+
+
+
+
+
+    <div class="container">
+      {% if verified is not None %} {% load i18n %} {% load account %}
+      <div style="text-align: center; width: 100%;">
+        {% block head_title %}{% trans "Confirm E-mail Address" %}{% endblock %}
+
+
+        <h1>{% trans "Confirm E-mail Address" %}</h1> {% if confirmation %} {% user_display confirmation.email_address.user as user_display %}
+
+        <p>{% blocktrans with confirmation.email_address.email as email %}Please confirm that <a href="mailto:{{email}}">{{ email }}</a> is an e-mail address for user {{ user_display }}.{% endblocktrans %}</p>
+
+        <form method="post" action="{% url 'account_confirm_email' confirmation.key %}">
+          {% csrf_token %}
+          <button type="submit">{% trans 'Confirm' %}</button>
+        </form>
+
+        {% else %} {% url 'account_email' as email_url %}
+
+        <p>{% blocktrans %}This e-mail confirmation link expired or is invalid. Please <a href="{{ email_url}}">issue a new e-mail confirmation request</a>.{% endblocktrans %}</p>
+      </div>
+      {% endif %} {% endif %} {% if resend_verification is not None %} {% load i18n %} {% load account %}
+      <div style="text-align: center; width: 100%;">
+
+        <h1>{% trans "E-mail Addresses" %}</h1> {% if user.emailaddress_set.all %}
+        <p>{% trans 'The following e-mail addresses are associated with your account:' %}</p>
+
+        <form action="{% url 'account_email' %}" class="email_list" method="post">
+          {% csrf_token %}
+          <fieldset class="blockLabels">
+
+            {% for emailaddress in user.emailaddress_set.all %}
+            <div class="ctrlHolder">
+              <label for="email_radio_{{forloop.counter}}" class="{% if emailaddress.primary %}primary_email{%endif%}">
+
+            <input id="email_radio_{{forloop.counter}}" type="radio" name="email" {% if emailaddress.primary or user.emailaddress_set.count == 1 %}checked="checked"{%endif %} value="{{emailaddress.email}}"/>
+
+      {{ emailaddress.email }}
+          {% if emailaddress.verified %}
+          <span class="verified">{% trans "Verified" %}</span>
+          {% else %}
+          <span class="unverified">{% trans "Unverified" %}</span>
+          {% endif %}
+            {% if emailaddress.primary %}<span class="primary">{% trans "Primary" %}</span>{% endif %}
+      </label>
+            </div>
+            {% endfor %}
+
+            <div class="buttonHolder">
+
+              <button class="secondaryAction" type="submit" name="action_send">{% trans 'Re-send Verification' %}</button>
+              <button class="primaryAction" type="submit" name="action_remove">{% trans 'Remove' %}</button>
+            </div>
+
+          </fieldset>
+        </form>
+
+        {% else %}
+        <p><strong>{% trans 'Warning:'%}</strong> {% trans "You currently do not have any e-mail address set up. You should really add an e-mail address so you can receive notifications, reset your password, etc." %}</p>
+
+        {% endif %} {% block extra_body %}
+        <script type="text/javascript">
+        (function() {
+  var resend = document.getElementsByName("action_send");
+  resend[0].addEventListener("click", function(e) {
+    var xhr = new XMLHttpRequest();
+
+    xhr.onreadystatechange = function() {
+      if (this.readyState != 4) return;
+
+      if (this.status == 200) {
+        var data = JSON.parse(this.responseText);
+      }
+    };
+
+    xhr.open("GET", "accounts/resend_verification/", true);
+    xhr.send();
+  });
+  var message =
+    "{% trans 'Do you really want to remove the selected e-mail address?' %}";
+  var actions = document.getElementsByName("action_remove");
+  if (actions.length) {
+    actions[0].addEventListener("click", function(e) {
+      if (!confirm(message)) {
+        e.preventDefault();
+      }
+    });
+  }
+})();
+</script>
+        {% endblock %}
+      </div>
+      {% endif %}
+      <div class="row">
+
+        <div class="col-md-12">
+          <div class="row">
+            <div class="col-md-9" style="padding-top: 15px;text-align: -webkit-center;">
+
+              <div class="fotorama" data-width="100%" data-ratio="800/500" data-minwidth="320" data-maxwidth="800" data-minheight="200" data-maxheight="350">
+
+                {% if raffle is not None and raffle.product is not None %} {% if raffle.product.image1 is not None %} {% if 'youtube' in raffle.product.image1 %}
+                <iframe src="{{ raffle.product.image1 }}?modestbranding=1&autohide=1&showinfo=0">
+</iframe> {% else %}
+                <img src="{{ raffle.product.image1 }}" alt="{{ raffle.product.name }}" title="{{ raffle.product.name }}" /> {% endif %} {% endif %} {% if raffle.product.image2 is not None %}
+                <img src="{{ raffle.product.image2 }}" alt="{{ raffle.product.name }}" title="{{ raffle.product.name }}" /> {% endif %} {% if raffle.product.image3 is not None %}
+                <img src="{{ raffle.product.image3 }}" alt="{{ raffle.product.name }}" title="{{ raffle.product.name }}" /> {% endif %} {% else %}
+                <img src="../static/img/newlogo.png" alt="No Image Provided" title="No Image Provided" /> {% endif %}
+
+              </div>
+              {% if user_is_winner %}
+              <div class="win_overlay">
+
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="col-md-3" style="z-index: 2;">
+              <div class="product-page-meta box" id="swiper">
+                {% if raffle is not None %} {% if raffle.owner.logo is not None %}
+                <div id="ownerlogo" style='top: 0;
+    height: 50px;
+    line-height: 50px;
+    z-index: 1;
+    text-align: center;
+    border: 1px dashed #4fc7b7;
+    border-right: 0px;
+    border-left: 0px;
+    border-top: 0px;
+    margin-bottom: 10px;'><img src="{{ raffle.owner.logo }}" style="max-height: 40px; padding-bottom: 5px;"></img>
+                </div>
+                {% endif %}
+                <h4>{{ raffle.name }}</h4> {% else %}
+                <h4>New Raffle Coming Soon...</h4> {% endif %} {% if raffle is not None and raffle.short_description is not None %}
+                <p class="short-description">{{ raffle.short_description }}</p>
+                {% if raffle.status == 0 and not user_is_winner %}
+                <div class="alert alert-info" style="text-align:center;">Winners Selected</div>
+                {% elif user_is_winner and not address_set %}
+                <a style="z-index: 2;" id="enteraddress" class="popup-text btn btn-primary btn-lg btn-block" data-effect="mfp-move-from-top" href="#address-dialog">Enter Address</a> {% elif user_is_winner and address_set %}
+                <div class="alert alert-info" style="text-align:center;">Product Coming Soon!</div>
+                {% else %}
+                <a id="enterraffle" class="popup-text btn btn-primary btn-lg btn-block" data-effect="mfp-move-from-top" href="#register-dialog">Enter for Free!</a> {% endif %} {% else %}
+                <p>Check back in regularly for updates, we'll keep giving you free tickets each day you log in!</p>
+                {% endif %}
+
+                <ul class="list product-page-meta-info">
+                  {% if raffle is not None and raffle.num_of_winners is not None and raffle.est_value is not None %}
+                  <li>
+                    <ul class="list product-page-meta-price-list">
+                      <li><span class="product-page-meta-title">Winners:</span><span class="product-page-meta-price">{{ raffle.num_of_winners }}</span>
+                      </li>
+                      <li style="float:right;"><span class="product-page-meta-title">Est. Value</span><span class="product-page-meta-price">{{ raffle.est_value }}</span>
+                      </li>
+                      <li><span class="product-page-meta-title"></span><span class="product-page-meta-price"></span>
+                      </li>
+                    </ul>
+                  </li>
+                  {% endif %} {% if raffle is not None and raffle.formatted_end_time is not None and raffle.status != 0 %}
+                  <li><span class="product-page-meta-title" id='raffletimetitle'>Time Left to Enter</span>
+                    <!-- COUNTDOWN -->
+                    <div id="countdowndiv" data-countdown="" class="countdown countdown-inline"></div>
+                  </li>
+                  {% else %}
+                  <li><span class="product-page-meta-title">Raffle Closed</span>
+                    <!-- COUNTDOWN -->
+                  </li>
+                  {% endif %}
+                  <li><span class="product-page-meta-title">
+                  {% if raffle is not None %}
+                  {{ raffle.tickets }}+
+                  {% else %}
+                  0
+                  {% endif %}
+                   Entered</span>
+                  </li>
+
+
+
+                </ul>
+
+              </div>
+            </div>
+
+
+            {% if raffle is none %}
+            <div class="row col-md-9 nav-tabs text-smaller box bumpup">
+              <h4>Rafflie's Finding Rafflers</h4>
+              <p>We're hard at work finding great new products to raffle away... Remember that whether a raffle is live or not, you can always get free tickets by simply checking in each day!</p>
+            </div>
+            {% else %}
+            <div class="tabbable col-md-9" style="padding-top: 10px;z-index:8; margin-bottom: 20px;">
+              <ul class="nav nav-tabs" id="myTab">
+                {% if raffle.full_description is not None or raffle.key_features is not None or raffle.fine_print is not None %}
+                <li class="mytab active"><a href="#tab-1" data-toggle="tab"><i class="fa fa-tag"></i>
+                Deal
+            </a>
+                </li>
+                {% endif %} {% if raffle.owner.name is not None and raffle.owner.bio is not None %}
+                <li class="mytab"><a href="#tab-4" data-toggle="tab"><i class="fa fa-info"></i>
+                About
+            </a>
+                </li>
+                {% endif %} {% if raffle is not None and request.user.is_authenticated and raffle.status == 1%}
+                <li class="mytab"><a href="#tab-5" data-toggle="tab"><i class="fa fa-ticket"></i>
+                Tickets
+            </a>
+                </li>
+                {% endif %}
+              </ul>
+              <div class="tab-content">
+                {% if raffle.product.full_description is not None %}
+                <div class="tab-pane fade in active" id="tab-1">
+                  <div class="row text-smaller">
+                    <div class="col-md-4">
+                      {% if raffle.product.name is not none %}
+                      <h4>{{ raffle.product.name }}</h4> {% else %}
+                      <h4>About</h4> {% endif %}
+
+                      <p class="full-description">{{ raffle.product.full_description }}</p>
+
+                    </div>
+                    {% endif %} {% if raffle.product.key_features is not None %}
+                    <div class="col-md-4">
+                      <h4>Key Features</h4>
+                      <p>{{ raffle.product.key_features }}</p>
+                    </div>
+                    {% endif %} {% if raffle.fine_print is not None %}
+                    <div class="col-md-4">
+                      <h4>The Fine Print</h4>
+                      <p>{{ raffle.fine_print }}</p>
+                    </div>
+                    {% endif %}
+                  </div>
+                </div>
+                {% if raffle.owner.name is not none and raffle.owner.bio is not none %}
+
+                <div class="tab-pane fade" id="tab-4">
+                  <h3>{{ raffle.owner.name }}</h3>
+
+                  <p>{{ raffle.owner.bio }}</p>
+                  {% endif %} {% if raffle.owner.website is not None %}
+                  <a href="{{ raffle.owner.website }}" class="btn btn-primary">{{ raffle.owner.name }}<i class="fa fa-external-link" style="padding-left: 10px;"></i></a> {% endif %}
+                </div>
+                <div class="tab-pane fade" id="tab-5">
+                  {% if raffle is not None %} {% if request.user.is_authenticated %}
+
+                  <h3>Share for Tickets</h3>
+                  <h5>Once a day you can get 20 extra tickets for posting this raffle on your wall!</h5>
+                  <div style="padding-top: 10px;">
+                    <div class="fb-share-button" data-href="https://www.rafflie.com" data-layout="button" data-size="large" data-mobile-iframe="true" style="margin-left: auto;margin-right: auto;align-items: center;justify-content: center;display: flex;">
+                      <a style="width:100%; max-width: 250px; background:#42709e !important;" id='postit' class="btn btn-success socialaccount_provider facebook">
+              Share
+             </a>
+                    </div>
+                  </div>
+
+                  {% endif %} {% endif %}
+                </div>
+              </div>
+            </div>
+            {% endif %}
+
+          </div>
+        </div>
+
+      </div>
+
+
+
+
+      <footer class="main" id="main-footer" style="width: 100%; position: absolute; left: 0;">
+        <div class="footer-top-area">
+          <div class="container">
+            <div class="row row-wrap">
+              <div class="col-md-3">
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+
+      <script>
+      document
+  .getElementById("countdowndiv")
+  .setAttribute("data-countdown", raffle_endtime);
+</script>
+      <!-- Scripts queries -->
+      <script src="../static/js/jquery.js"></script>
+      <script src="../static/js/boostrap.min.js"></script>
+      <script src="../static/js/countdown.js"></script>
+      <script src="../static/js/flexnav.js"></script>
+      <script src="../static/js/magnific.js"></script>
+      <script src="../static/js/tweet.min.js"></script>
+      <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+      <script src="../static/js/fitvids.min.js"></script>
+      <script src="../static/js/mail.min.js"></script>
+      <script src="../static/js/ionrangeslider.js"></script>
+      <script src="../static/js/icheck.js"></script>
+      <script src="../static/js/fotorama.js"></script>
+      <script src="../static/js/card-payment.js"></script>
+      <script src="../static/js/owl-carousel.js"></script>
+      <script src="../static/js/masonry.js"></script>
+      <script src="../static/js/nicescroll.js"></script>
+      <script src="https://hammerjs.github.io/dist/hammer.js"></script>
+      <!-- Custom scripts -->
+      <script src="../static/js/jquery.fireworks.js"></script>
+      <script type="text/javascript" src="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.min.js"></script>
+      <script>
+      setTimeout(function() {
+  $(".alert").hide();
+}, 10000);
+</script>
+      {% if user_is_winner %}
+      <script>
+      $("#fireworks").css("z-index", "1");
+
+$("#fireworks").fireworks();
+</script>
+      {% if not address_set %}
+      <script>
+      setTimeout(function() {
+  $("#enteraddress").click();
+}, 5000);
+</script>
+      {% endif %} {% endif %}
+      <script id="facebook-jssdk" async="" src="//connect.facebook.net/en-US/sdk.js"></script>
+      <script>
+      window.fbAsyncInit = function() {
+  FB.init({
+    appId: "1285512478176566",
+    xfbml: true,
+    version: "v2.8"
+  });
+  FB.AppEvents.logPageView();
+};
+
+(function(d, s, id) {
+  var js,
+    fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {
+    return;
+  }
+  js = d.createElement(s);
+  js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js";
+  fjs.parentNode.insertBefore(js, fjs);
+})(document, "script", "facebook-jssdk");
+
+$("#postit").on("click touchstart", function(event) {
+  FB.ui(
+    {
+      method: "share_open_graph",
+      action_type: "og.shares",
+      display: "popup",
+      action_properties: JSON.stringify({
+        object: {
+          "og:url": "http://rafflie.com",
+          "og:title": "[Rafflie] " + raffle_name + " [Free Tickets]",
+          "og:description": raffle_description,
+          "og:image": raffle_product_image
+        }
+      })
+    },
+    function(response) {
+      if (response && response.post_id) {
+        $.ajaxSetup({
+          data: {
+            csrfmiddlewaretoken: csrftoken,
+            raffle_id: raffle_id
+          }
+        });
+        $.post("/share/", function(data, status) {
+          setTimeout("location.href = '/'", 5000);
+        });
+      }
+    }
+  );
+});
+
+var myElement = document.getElementById("swiper");
+
+var mc = new Hammer(myElement);
+
+mc.on("swipeleft swiperight", function(ev) {
+  if (ev.type == "swiperight") {
+    var id_index = raffle_ids.indexOf(Number(raffle_id));
+
+    var pos = raffle_ids.length - 1;
+    if (id_index > 0) {
+      pos = id_index - 1;
+    }
+
+    setTimeout("location.href = '/raffle/" + raffle_ids[pos] + "/'", 500);
+  }
+  if (ev.type == "swipeleft") {
+    var id_index = raffle_ids.indexOf(Number(raffle_id));
+
+    var pos = 0;
+    if (id_index < raffle_ids.length - 1) {
+      pos = id_index + 1;
+    }
+
+    setTimeout("location.href = '/raffle/" + raffle_ids[pos] + "/'", 500);
+  }
+});
+
+$(document).ready(function() {
+  var other_raffles = "";
+  for (var i = 0; i < raffle_images.length; i++) {
+    other_raffles +=
+      '<div style="text-align: -webkit-center; background:rgb(255, 255, 255); padding: 5px; height:80px;"><a style="outline: none !important;text-decoration: none;" href="/raffle/' +
+      raffle_ids[i] +
+      '/"><div style="width:90%; height:100%;background:url(' +
+      raffle_logos[i] +
+      '); background-size: contain; background-repeat: no-repeat; text-decoration:none; background-position: center; "></div></a></div>';
+  }
+  $(".other_raffles").html(other_raffles);
+  $(".other_raffles").slick({
+    infinite: true,
+    slidesToShow: 5,
+    slidesToScroll: 5
+  });
+});
+
+var isActive = false;
+
+if (winners == "None") {
+  isActive = true;
+}
+
+function pollServer() {
+  if (isActive) {
+    window.setTimeout(function() {
+      $.ajaxSetup({
+        data: {
+          csrfmiddlewaretoken: csrftoken,
+          raffle_id: raffle_id
+        }
+      });
+      $.ajax({
+        url: "/drawing/",
+        type: "POST",
+        success: function(result) {
+          //SUCCESS LOGIC
+
+          if (parseInt(result.found_winners) > 0) {
+            setTimeout("location.href = '/'", 1000);
+          } else {
+            pollServer();
+          }
+        },
+        error: function() {
+          //ERROR HANDLING
+          pollServer();
+        }
+      });
+    }, 2500);
+  }
+}
+</script>
+      <script src="../static/js/custom.js"></script>
+    </div>
+
+</body>
+
+</html>
